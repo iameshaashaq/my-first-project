@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Bug Report for My pumpkin</title>
+<style>
+    body{
+        font-family: Arial , sans-serif;
+        text-align: center;
+        background: #f0f0f0;
+        padding:30px;
+    }
+
+    .box{
+        background:#e6d7ff;
+        padding:20px;
+        border-radius: 15px;
+        max-width: 400px;
+        box-shadow: 0 0 10px rgba(0,0,0,0.1);
+    }
+    button{
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 8px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    .yes{background: #4CAF50; color:white;}
+    .no{background: #f44336; color: white;}
+    .fade {
+  animation: fadeIn 0.4s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+</style>
+<script>
+    const questions = [
+  "Do I ever annoy you?",
+  "Do you think we communicate clearly with each other?",
+  "Do you want us to improve our communication?",
+  "Do you feel comfortable sharing your thoughts with me?",
+  "Do you feel I listen to you carefully?",
+  "Are there moments where you feel misunderstood by me?",
+  "Do you enjoy spending time with me even on ordinary days?",
+  "Do you want us to handle disagreements better together?",
+  "Do you feel we support each other in daily life?",
+  "Do you see us growing stronger together over time?"
+];
+
+let index = 0;
+let yesCount = 0;
+let comments = [];
+
+function loadQuestion() {
+const q = document.getElementById("question");
+  q.classList.remove("fade");
+
+  setTimeout(() => {
+    q.innerText = questions[index];
+    q.classList.add("fade");
+  }, 50);
+
+  document.getElementById("progress").innerText =
+    "Question " + (index + 1) + " of " + questions.length;
+}
+
+function answer(isYes) {
+  if (isYes) {
+    yesCount++;
+    loadNext();
+  } else {
+    document.getElementById("comment-box").style.display = "block";
+  }
+}
+
+function submitComment() {
+  const text = document.getElementById("comment").value;
+  comments.push(text);
+  document.getElementById("comment").value = "";
+  document.getElementById("comment-box").style.display = "none";
+  loadNext();
+}
+
+function loadNext() {
+  index++;
+  if (index < questions.length) {
+    loadQuestion();
+  } else {
+    showResult();
+  }
+}
+
+function showResult() {
+   let msg = "";
+
+    if (yesCount >= 8) {
+        msg = "✅ Relationship Status: Strong & Healthy 💖";
+    } else if (yesCount >= 5) {
+        msg = "⚠️ Relationship Status: Some bugs to fix 😉";
+    } else {
+        msg = "❌ Relationship Status: Needs attention 💌";
+    }
+
+    // build comments HTML
+    let commentsHTML = "";
+    if (comments.length > 0) {
+        commentsHTML = "<h3>💌 His Feedback:</h3><ul>";
+        comments.forEach(c => {
+            commentsHTML += "<li>" + c + "</li>";
+        });
+        commentsHTML += "</ul>";
+    }
+
+    // show result inside the box
+    document.querySelector(".box").innerHTML =
+        "<h2>Report Complete</h2>" +
+        "<p>" + msg + "</p>" +
+        commentsHTML;
+
+    // show WhatsApp button
+    document.getElementById("whatsapp-share").style.display = "inline-block";
+}
+function shareWhatsApp() {
+    // Build the message
+    let msg = "💖 My Relationship Bug Report 💖\n\n";
+    msg += "Status: " + (yesCount >= 8 ? "✅ Strong & Healthy" :
+                        yesCount >=5 ? "⚠️ Some bugs to fix" : "❌ Needs attention") + "\n\n";
+
+    if(comments.length > 0){
+        msg += "💌 Feedback:\n";
+        comments.forEach((c,i) => {
+            msg += (i+1) + ". " + c + "\n";
+        });
+    }
+
+    // Encode message for URL
+    const url = "https://wa.me/?text=" + encodeURIComponent(msg);
+
+    // Open WhatsApp in a new tab
+    window.open(url, "_blank");
+}
+window.onload = loadQuestion;
+</script>
+</head>
+<body>
+    <div class="box">
+        <h2>Relationship Bug Report</h2>
+        <p id="progress" style="color:#888; font-size:14px;"></p>
+        <p id="question">Loading question...</p>
+        <button class="yes" onclick="answer(true)">yes</button>
+        <button class="no" onclick="answer(false)">NO</button>
+        <div id="comment-box" style="display:none; margin-top:10px;">
+      <p>💌 Can you tell me why? What can we improve?</p>
+      <textarea id="comment" rows="3" placeholder="Write your reason here..." style="width:90%; padding:5px; border-radius:8px;"></textarea>
+      <button onclick="submitComment()" style="margin-top:5px; background:#ffb6c1; color:white;">Submit</button>
+    </div>
+
+        <p id="result"></p>
+        </div>
+        <button id="whatsapp-share" 
+        style="margin-top:10px; background:#25D366; color:white; border-radius:8px; padding:10px 20px; font-size:16px; display:none;" 
+        onclick="shareWhatsApp()">
+    Share on WhatsApp 💌
+</button>
+</body>
+</html>
